@@ -1,4 +1,4 @@
-# Dev Account bootstrap: State Bucket·key, CI Role, 비상 Role, Account 기준선, 보안 event 전달.
++# member Account bootstrap: State Bucket·key, CI Role, 비상 Role, Account 기준선, 보안 event 전달.
 # 첫 apply만 로컬(InfrastructureProvisioner bootstrap 배정)로 하고 실행 기록·사후 PR을 남긴다. 이후 변경은 admin lane CI만.
 
 data "aws_caller_identity" "current" {}
@@ -14,7 +14,7 @@ locals {
   ]
 }
 
-# State Bucket과 State 전용 key(alias/cloud-platform-dev-tfstate).
+# State Bucket과 State 전용 key. 예: alias/cloud-platform-dev-tfstate
 module "state_bucket" {
   source = "../../../modules/state-bucket"
 

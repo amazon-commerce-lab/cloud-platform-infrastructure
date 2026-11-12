@@ -7,7 +7,7 @@ provider "aws" {
   default_tags {
     tags = {
       ManagedBy = "Terraform"
-      Stack     = "dev/bootstrap"
+      Stack     = "${var.environment}/bootstrap"
     }
   }
 }

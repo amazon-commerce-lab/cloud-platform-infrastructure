@@ -18,5 +18,5 @@ variable "region" {
 
 variable "environment" {
   description = "Account 짧은 이름. State Bucket·key alias·Role 이름에 들어간다."
-  type        = string # 예: dev
+  type        = string # 예: dev, prod, network
 }
