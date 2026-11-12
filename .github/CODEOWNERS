@@ -1,0 +1,81 @@
+# 같은 경로에 여러 줄이 맞으면 파일 아래쪽 줄이 이긴다. 작성자는 자기 PR을 code owner로 승인할 수 없다(Ruleset).
+# 모든 변경은 CI/CD·플랫폼 검토 팀이 리뷰합니다.
+*                                        @amazon-commerce-lab/devops-reviewers
+# State 버킷, CI 역할, SCP, 배포 workflow는 운영 책임자가 리뷰합니다.
+/terraform/environments/*/bootstrap/     @amazon-commerce-lab/sre-leads
+/terraform/modules/state-bucket/         @amazon-commerce-lab/sre-leads
+/terraform/modules/github-ci-roles/      @amazon-commerce-lab/sre-leads
+/.github/workflows/                      @amazon-commerce-lab/sre-leads
+/.tflint.hcl                             @amazon-commerce-lab/sre-leads
+# Dev와 Prod가 함께 쓰는 GitOps 파일은 두 환경에 영향을 주므로 운영 책임자가 승인합니다.
+/gitops/platform/                        @amazon-commerce-lab/sre-leads
+/gitops/apps/*/base/                     @amazon-commerce-lab/sre-leads
+/gitops/apps/project.yaml                @amazon-commerce-lab/sre-leads
+/gitops/apps/kustomization.yaml          @amazon-commerce-lab/sre-leads
+# 그중 Dev에만 쓰이는 파일은 CI/CD·플랫폼 검토 팀에 돌려줍니다. 위 줄보다 아래에 있어야 이깁니다.
+/gitops/platform/*/values-dev.yaml       @amazon-commerce-lab/devops-reviewers
+/gitops/platform/*/dev/                  @amazon-commerce-lab/devops-reviewers
+# Prod 인프라와 Prod GitOps 설정은 운영 책임자가 승인합니다.
+/terraform/environments/prod/            @amazon-commerce-lab/sre-leads
+/gitops/**/prod/                         @amazon-commerce-lab/sre-leads
+/gitops/**/*-prod.yaml                   @amazon-commerce-lab/sre-leads
+/gitops/apps/*/application-prod/         @amazon-commerce-lab/sre-leads
+# DB 관리자 경로와 그 AppProject는 운영 책임자가 소유합니다.
+/gitops/apps/commerce-api/db-admin/      @amazon-commerce-lab/sre-leads
+/gitops/apps/platform-data-project.yaml  @amazon-commerce-lab/sre-leads
+/gitops/apps/commerce-api/application-db-admin-*/ @amazon-commerce-lab/sre-leads
+# migration 이미지와 namespace 보안 label은 별도 승인 경로다.
+/gitops/apps/commerce-api/db-migrate/     @amazon-commerce-lab/sre-leads
+/gitops/apps/commerce-migrations-project.yaml @amazon-commerce-lab/sre-leads
+/gitops/components/                      @amazon-commerce-lab/sre-leads
+/gitops/platform/namespaces/             @amazon-commerce-lab/sre-leads
+# 감사·서명·인증·백업과 검사 기준은 운영 책임자가 승인한다.
+/terraform/environments/*/security/      @amazon-commerce-lab/sre-leads
+/terraform/environments/security/        @amazon-commerce-lab/sre-leads
+/terraform/environments/log-archive/     @amazon-commerce-lab/sre-leads
+/terraform/environments/backup/          @amazon-commerce-lab/sre-leads
+/terraform/environments/*/operations/backup/ @amazon-commerce-lab/sre-leads
+/terraform/environments/network/        @amazon-commerce-lab/sre-leads
+/security/                              @amazon-commerce-lab/sre-leads
+/scripts/security/                      @amazon-commerce-lab/sre-leads
+/tests/security/                        @amazon-commerce-lab/sre-leads
+/scripts/select-terraform-stacks.py      @amazon-commerce-lab/sre-leads
+# 이 파일 자체도 운영 책임자만 바꿀 수 있습니다.
+/.github/CODEOWNERS                      @amazon-commerce-lab/sre-leads
+
+/terraform/environments/dev/foundation/delivery/app-ci-roles.tf     @amazon-commerce-lab/sre-leads
+/terraform/environments/dev/foundation/delivery/terraform.tfvars    @amazon-commerce-lab/sre-leads
+
+# GitOps PR 검사 source와 등록 경로는 운영 책임자가 승인합니다.
+/ci/                                      @amazon-commerce-lab/sre-leads
+/tests/delivery/                          @amazon-commerce-lab/sre-leads
+/requirements-delivery.txt                @amazon-commerce-lab/sre-leads
+/gitops/clusters/                         @amazon-commerce-lab/sre-leads
+/gitops/releases/                         @amazon-commerce-lab/sre-leads
+/gitops/apps/*/application-*/             @amazon-commerce-lab/sre-leads
+/gitops/apps/*project.yaml                @amazon-commerce-lab/sre-leads
+/gitops/platform/*/application.yaml       @amazon-commerce-lab/sre-leads
+# 장애 훈련용 Application 등록 목록. rotation·DB client·부하 장애 훈련을 어느 namespace에 띄울지 정하므로 등록 경로와 같이 본다.
+/gitops/drills/                           @amazon-commerce-lab/sre-leads
+# 배포 검증 기반(NodePool·검증 Role·ClusterRole). 검증 기록을 확인하는 Role의 권한이라 Argo CD가 아니라 JIT 관리자가 kubectl diff·apply -k로 넣는다.
+/gitops/acceptance/                       @amazon-commerce-lab/sre-leads
+# 시험용 debug Pod manifest(kubectl apply -f로 잠깐 띄움). 기본 owner와 같지만 의도한 것임을 적어 둔다.
+/tools/                                   @amazon-commerce-lab/devops-reviewers
+
+# 계정·권한(Management, break-glass, JIT)과 GitHub 설정(team·Ruleset·Environment·변수)은 보안 승인 team이 소유한다.
+# 맨 아래에 두어 위 줄보다 우선한다. GitHub 설정 PR은 security-approvers가 리뷰하고, apply도 github-settings-apply에서 같은 team이 승인한다.
+/terraform/environments/management/       @amazon-commerce-lab/security-approvers
+/terraform/modules/break-glass-role/      @amazon-commerce-lab/security-approvers
+/terraform/github/                        @amazon-commerce-lab/security-approvers
+/ci/access/                               @amazon-commerce-lab/security-approvers
+/.github/workflows/jit-*                  @amazon-commerce-lab/security-approvers
+/.github/workflows/access-review.yml      @amazon-commerce-lab/security-approvers
+/.github/workflows/terraform-stack.yml    @amazon-commerce-lab/security-approvers
+/runbooks/security/                       @amazon-commerce-lab/security-approvers
+# RDS master secret을 읽는 break-glass manifest. 위 db-admin 줄(sre-leads)보다 아래에 있어야 이긴다.
+/gitops/apps/commerce-api/db-admin/break-glass/ @amazon-commerce-lab/security-approvers
+# 개인정보 마스킹 목록은 운영 책임자와 보안 승인 team에 함께 리뷰 요청이 간다. 위 db-migrate 줄(sre-leads)보다 아래에 있어야 이긴다.
+/gitops/apps/commerce-api/db-migrate/base/masking/pii-columns.yaml @amazon-commerce-lab/sre-leads @amazon-commerce-lab/security-approvers
+# 감사 원본은 각 감사 team이 PR을 소유하고, apply 승인은 다른 감사 team이 한다(교차 승인).
+/terraform/environments/log-archive/      @amazon-commerce-lab/log-archive-admins
+/terraform/environments/security/foundation/audit/ @amazon-commerce-lab/audit-trail-admins
