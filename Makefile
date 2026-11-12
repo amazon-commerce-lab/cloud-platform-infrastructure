@@ -1,5 +1,6 @@
 # 운영 반복 절차 모음. 각 target은 scripts/ops/*.sh(또는 ci.release.session)를 한 줄로 부른다.
 # 목록과 사용법: make help
+# target 하나의 실제 명령과 단계: make explain TARGET=<target>, 부를 명령만 보기: make --dry-run <target> …
 # ENV가 없으면 dev다. 예: make kubeconfig ENV=prod ACCESS=admin
 # 같은 target을 다시 실행해도 결과가 같다(이미 있는 것은 건너뛰거나 diff가 비어 있음).
 
@@ -10,7 +11,7 @@ OPS := scripts/ops
 require = $(foreach name,$(1),$(if $(value $(name)),,$(error $(name)= 값이 필요합니다. make help로 사용법을 봅니다)))
 
 .DEFAULT_GOAL := help
-.PHONY: help eks-tunnel kubeconfig validate gitops-check kyverno-test rules-test test render \
+.PHONY: help explain eks-tunnel kubeconfig validate gitops-check kyverno-test rules-test test render \
 	bootstrap migrate-state init-template argocd-bootstrap argocd-cluster jit stack \
 	db-connect db-psql drill-alert mirror-image dr-drill \
 	release-acquire release-transition release-descriptor release-pin-platform release-activate release-catalog-ids release-register-pr release-status release-close promotion-request acceptance-request platform-record
@@ -18,6 +19,10 @@ require = $(foreach name,$(1),$(if $(value $(name)),,$(error $(name)= 값이 필
 help: ## target 목록
 	@echo "사용: make <target> [ENV=dev|prod] [변수=값 ...]"
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z-]+:.*## / {name = $$1; while (length(name) < 22) name = name " "; print "  " name $$2}' $(MAKEFILE_LIST)
+
+explain: ## target이 실행하는 명령과 단계 보기(실행하지 않음). TARGET=migrate-state
+	$(call require,TARGET)
+	@$(OPS)/explain.sh $(TARGET)
 
 # ---------- 접속 ----------
 
